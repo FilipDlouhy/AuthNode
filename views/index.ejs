@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="/style.css">
+  <title></title>
+</head>
+<body>
+
+<header>
+    <h1>Messages</h1>
+
+
+</header>
+
+<a class="logOut" href="/log-out">Log-out</a>
+
+<a class="createMessage" href="/createMessage">Create message</a>
+
+
+
+<div class="messages">
+
+  
+
+</div>
+
+</body>
+
+<script>
+    let showMessages = document.querySelector(".messages")
+let messages
+fetch("/getMessages").then(res=>res.json()).then(data=>{
+messages = data.messages
+data.messages.map((message)=>{
+if(data.Useros.permision === "admin"){
+    showMessages.innerHTML += `  <div class="message">
+
+<h1>${message.title}</h1>
+
+<p>${message.text}</p>
+
+<p>${message.username}</p>
+<p id="${message._id}" class="deleteMessage">X</p>
+    </div>`
+
+
+    let deleteMessage = document.querySelectorAll(".deleteMessage")
+
+deleteMessage.forEach((button) => {
+button.addEventListener(("click"),(event)=>{
+let data = {id:"ASDASDASDADS"}
+
+fetch(`/messageDelete/${event.target.id}`, {
+  method: 'POST', // or 'PUT'
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(data),
+})
+console.log(event.target.parentElement)
+let newMessages = []
+
+messages.forEach((message)=>{
+    let  id = message._id.toString().slice(0,24)
+  if(id !==event.target.id){
+    newMessages.push(message)
+  }
+})
+
+
+messages = newMessages
+console.log(messages)
+showMessages.innerHTML = " "
+newMessages.forEach((message)=>{
+    showMessages.innerHTML += `  <div class="message">
+
+<h1>${message.title}</h1>
+
+<p>${message.text}</p>
+
+<p>${message.username}</p>
+<p id="${message._id}" class="deleteMessage">X</p>
+    </div>`
+})
+
+
+})
+    
+});
+    
+
+}else{
+    showMessages.innerHTML += `  <div class="message">
+
+<h1>${message.title}</h1>
+
+<p>${message.text}</p>
+
+<p>${message.username}</p>
+
+    </div>`
+}
+
+    
+})
+})
+
+
+
+
+</script>
+
+</html>
